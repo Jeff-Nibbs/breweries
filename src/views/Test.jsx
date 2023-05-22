@@ -4,23 +4,34 @@ import axios from 'axios'
 function Test() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [city, setCity] = useState('dude')
 
   useEffect(() => {
-    axios
-      .get('https://api.openbrewerydb.org/v1/breweries?by_city=rocklin')
-      .then(res => {
-        setData(res.data)
+    try {
+      const fetchData = async () => {
+        const response = await axios.get(`https://api.openbrewerydb.org/breweries?by_city=${city}`)
+        setData(response.data)
         setLoading(false)
-        console.log(res.data)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }, [])
+      }
+      fetchData()
+    } catch (error) {
+      console.log(error)
+    }
+  }, [city])
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    setCity(e.target.city.value)
+  }
 
   return (
     <div>
       <h1>Test</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor='city'>City</label>
+        <input type='text' name='city' id='city' onChange={e => setCity(e.target.value)} />
+        <input type='submit' value='Submit' />
+      </form>
       {loading ? (
         <p>Loading...</p>
       ) : (
